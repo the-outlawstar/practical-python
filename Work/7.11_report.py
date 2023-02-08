@@ -6,8 +6,8 @@ Stuff and things go here
 '''
 
 import stock,tableformat
-from .portfolio import Portfolio
-from .fileparse import parse_csv
+from portfolio import Portfolio
+from fileparse import parse_csv
 
 def read_portfolio(filename:str,**opts) -> list:
     '''

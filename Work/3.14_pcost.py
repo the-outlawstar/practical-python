@@ -5,8 +5,8 @@ import sys
 from report import read_portfolio
 
 def portfolio_cost(filename):
-    portfolio = read_portfolio(filename)
-    return portfolio.total_cost
+    records = read_portfolio(filename)
+    return sum([h['shares'] * h['price'] for h in records])
 
 def main(argv):
     if len(argv) == 2:

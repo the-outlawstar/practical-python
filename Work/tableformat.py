@@ -1,0 +1,78 @@
+# tableformat.py
+
+class FormatError(Exception):
+    pass
+
+class TableFormatter:
+    def headings(self,headers):
+        '''
+        Emit the table headings.
+        '''
+        raise NotImplementedError
+
+    def row(self,rowdata):
+        '''
+        Emit a single row of table data.
+        '''
+        raise NotImplementedError
+
+class TextTableFormatter(TableFormatter):
+    '''
+    Emit a table in plain-text format
+    '''
+    def headings(self,headers):
+        for h in headers:
+            print(f'{h:>10s}',end=' ')
+        print()
+        print(('-'*10+' ')*len(headers))
+
+    def row(self,rowdata):
+        for row in rowdata:
+            print(f'{row:>10s}',end=' ')
+        print()
+
+class CSVTableFormatter(TableFormatter):
+    '''
+    Output portfolio data in csv format.
+    '''
+    def headings(self,headers):
+        print(','.join(headers))
+
+    def row(self,rowdata):
+        print(','.join(rowdata))
+
+class HTMLTableFormatter(TableFormatter):
+    '''
+    Output portfolio data in HTML format.
+    '''
+    def headings(self,headers):
+        header = '<tr>'
+        for h in headers:
+            header += '<th>' + h + '</th>'
+        header += '</tr>'
+        print(header)
+
+    def row(self,rowdata):
+        r = '<tr>'
+        for row in rowdata:
+            r += '<td>' + row + '</td>'
+        r += '</tr>'
+        print(r)
+        
+def create_formatter(fmt:str) -> TableFormatter:
+    if fmt == 'txt':
+        return TextTableFormatter()
+    elif fmt == 'csv':
+        return CSVTableFormatter()
+    elif fmt == 'html':
+        return HTMLTableFormatter()
+    else:
+        raise FormatError(f'Unknown format {fmt}. Valid formats are txt,csv,html.')
+
+def print_table(data,attributes,formatter):
+    formatter.headings(attributes)
+    #return [[getattr(rowdata, attr) for attr in attributes] for rowdata in data]
+    for row in data:
+        rowdata = [getattr(row, attr) for attr in attributes]
+        rowdata = [str(row) for row in rowdata]
+        formatter.row(rowdata)

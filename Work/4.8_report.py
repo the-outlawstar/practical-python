@@ -6,14 +6,15 @@ Stuff and things go here
 '''
 
 import stock,tableformat
-from .portfolio import Portfolio
-from .fileparse import parse_csv
+from fileparse import parse_csv
 
-def read_portfolio(filename:str,**opts) -> list:
+def read_portfolio(filename:str) -> list:
     '''
     Read a stock portfolio into a list of dicts w/ keys name, shares, and price.
     '''
-    return Portfolio.from_csv(filename,**opts)
+    portdicts = parse_csv(filename,select=['name','shares','price'],types=[str,int,float])
+    portfolio = [stock.Stock(d['name'],d['shares'],d['price']) for d in portdicts]
+    return portfolio
 
 def read_prices(filename:str) -> dict:
     '''
@@ -32,7 +33,10 @@ def holdings_change(portfolio:list,prices:dict) -> list:
     return holdings
 
 def print_report(reportdata,formatter):
+    # headers = ('Name', 'Shares', 'Price', 'Change')
     formatter.headings(['Name', 'Shares', 'Price', 'Change'])
+    # print('%10s %10s %10s %10s' % headers)
+    # print(('-' * 10 + ' ') * len(headers))
     for n,s,p,c in reportdata:
         # p = '$' + str(f'{p:.2f}')
         # print(f'{n:>10s} {s:>10d} {p:>10s} {c:>10.2f}')
@@ -50,9 +54,14 @@ def portfolio_report(portfolio_filename:str,prices_filename:str,fmt='txt'):
 
 def main(argv):
     if len(argv) == 4:
-        return portfolio_report(argv[1],argv[2],argv[3])
+        portfolio_file = argv[1]
+        prices_file = argv[2]
+        format = argv[3]
+        return portfolio_report(portfolio_file,prices_file,format)
     elif len(argv) == 3:
-        return portfolio_report(argv[1],argv[2])
+        portfolio_file = argv[1]
+        prices_file = argv[2]
+        return portfolio_report(portfolio_file,prices_file)
     else:
         portfolio_file = 'C:\\Users\\NTM\\Documents\\Neil\\python\\practical-python\\Work\\Data\\portfolio.csv'
         prices_file = 'C:\\Users\\NTM\\Documents\\Neil\\python\\practical-python\\Work\\Data\\prices.csv'

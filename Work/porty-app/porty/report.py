@@ -5,7 +5,7 @@
 Stuff and things go here
 '''
 
-import stock,tableformat
+from . import tableformat
 from .portfolio import Portfolio
 from .fileparse import parse_csv
 
